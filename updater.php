@@ -2,7 +2,7 @@
 class WP_LNC_Bitcoin_Updater {
 
 	private $file;
-  private $plugin;
+        private $plugin;
 	private $basename;
 	private $active;
 	private $username;
@@ -41,7 +41,6 @@ class WP_LNC_Bitcoin_Updater {
 	    if ( is_null( $this->github_response ) ) { // Do we have a response?
 		$args = array();
 	        $request_uri = sprintf( 'https://api.github.com/repos/%s/%s/releases', $this->username, $this->repository ); // Build URI
-		    var_dump($request_uri);
 		$args = array();
 
 	        if( $this->authorize_token ) { // Is there an access token?
