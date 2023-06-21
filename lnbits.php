@@ -4,7 +4,7 @@ Plugin Name: Bitcoin Payments
 Plugin URI: https://github.com/lightningcheckout/wp-lnc-bitcoin
 Forked from: https://github.com/lnbits/woocommerce-payment-gateway
 Description: Accept Bitcoin on your WooCommerce store both on-chain and with lightning facilitated by Lightning Checkout
-Version: 0.0.2
+Version: 0.0.3
 Author: Lightning Checkout
 Author URI: https://lightningcheckout.eu
 */
@@ -65,7 +65,7 @@ function lnbits_satspay_server_init()
     {
         $order_id = $data["id"];
         $order    = wc_get_order($order_id);
-        $order->add_order_note('Payment is settled and has been credited to your LNbits account. Purchased goods/services can be securely delivered to the customer.');
+        $order->add_order_note('Payment is settled and has been credited to your Lightning Checkout account.');
         $payment_hash = $order->get_meta('lnbits_satspay_server_payment_hash');
         $order->payment_complete();
         $order->save();
@@ -98,8 +98,8 @@ function lnbits_satspay_server_init()
             $this->id                 = 'lnbits';
             $this->icon               = plugin_dir_url(__FILE__) . 'assets/lightning.png';
             $this->has_fields         = false;
-            $this->method_title       = 'LNbits';
-            $this->method_description = 'Take payments in Bitcoin Onchain and with Lightning, without fees, using LNbits.';
+            $this->method_title       = 'Bitcoin';
+            $this->method_description = 'Take payments in Bitcoin, onchain and with lightning via Lightning Checkout';
 
             $this->init_form_fields();
             $this->init_settings();
@@ -107,7 +107,7 @@ function lnbits_satspay_server_init()
             $this->title       = $this->get_option('title');
             $this->description = $this->get_option('description');
 
-            $url       = $this->get_option('lnbits_satspay_server_url');
+            $url       = 'https://pay.lightningcheckout.eu';
             $api_key   = $this->get_option('lnbits_satspay_server_api_key');
             $wallet_id   = $this->get_option('lnbits_satspay_wallet_id');
             $watch_only_wallet_id   = $this->get_option('lnbits_satspay_watch_only_wallet_id');
@@ -132,8 +132,8 @@ function lnbits_satspay_server_init()
         public function admin_options()
         {
             ?>
-            <h3><?php _e('LNbits', 'woothemes'); ?></h3>
-            <p><?php _e('Accept Bitcoin instantly through the LNbits Satspay Server extension.', 'woothemes'); ?></p>
+            <h3><?php _e('Accepting Bitcoin', 'woothemes'); ?></h3>
+            <p><?php _e('Accept bitcoin instantly via Lightning Checkout.', 'woothemes'); ?></p>
             <table class="form-table">
                 <?php $this->generate_settings_html(); ?>
             </table>
@@ -149,8 +149,8 @@ function lnbits_satspay_server_init()
             // echo("init_form_fields");
             $this->form_fields = array(
                 'enabled'                             => array(
-                    'title'       => __('Enable LNbits payment', 'woocommerce'),
-                    'label'       => __('Enable Bitcoin payments via LNbits', 'woocommerce'),
+                    'title'       => __('Enable bitcoin payments', 'woocommerce'),
+                    'label'       => __('', 'woocommerce'),
                     'type'        => 'checkbox',
                     'description' => '',
                     'default'     => 'no',
@@ -159,43 +159,32 @@ function lnbits_satspay_server_init()
                     'title'       => __('Title', 'woocommerce'),
                     'type'        => 'text',
                     'description' => __('The payment method title which a customer sees at the checkout of your store.', 'woocommerce'),
-                    'default'     => __('Pay with Bitcoin with LNbits', 'woocommerce'),
+                    'default'     => __('', 'woocommerce'),
                 ),
                 'description'                         => array(
                     'title'       => __('Description', 'woocommerce'),
                     'type'        => 'textarea',
                     'description' => __('The payment method description which a customer sees at the checkout of your store.', 'woocommerce'),
-                    'default'     => __('You can use any Bitcoin wallet to pay. Powered by LNbits.'),
+                    'default'     => __(''),
                 ),
-                'lnbits_satspay_server_url'           => array(
-                    'title'       => __('LNbits URL', 'woocommerce'),
-                    'description' => __('The URL where your LNbits server is running.', 'woocommerce'),
-                    'type'        => 'text',
-                    'default'     => 'https://pay.lightningcheckout.eu',
-                ),
+
                 'lnbits_satspay_wallet_id'            => array(
-                    'title'       => __('LNbits Wallet ID', 'woocommerce'),
-                    'type'        => 'text',
-                    'description' => __('Available from your LNbits\' wallet\'s API info sidebar.', 'woocommerce'),
-                    'default'     => '',
-                ),
-                'lnbits_satspay_server_api_key'       => array(
-                    'title'       => __('LNbits Invoice/Read Key', 'woocommerce'),
+                    'title'       => __('Lightning Wallet', 'woocommerce'),
                     'type'        => 'text',
                     'description' => __('Available from your LNbits\' wallet\'s API info sidebar.', 'woocommerce'),
                     'default'     => '',
                 ),
                 'lnbits_satspay_watch_only_wallet_id' => array(
-                    'title'       => __('Watch Only Extension Wallet ID', 'woocommerce'),
+                    'title'       => __('Onchain Wallet', 'woocommerce'),
                     'type'        => 'text',
                     'description' => __('Available from your LNbits\' "Watch Only" extension.', 'woocommerce'),
                     'default'     => '',
                 ),
-                'lnbits_satspay_expiry_time' => array(
-                    'title'       => __('Invoice expiry time in minutes', 'woocommerce'),
-                    'type'        => 'number',
-                    'description' => __('Set an invoice expiry time in minutes.', 'woocommerce'),
-                    'default'     => '15',
+                'lnbits_satspay_server_api_key'       => array(
+                    'title'       => __('API Key', 'woocommerce'),
+                    'type'        => 'text',
+                    'description' => __('Available from your LNbits\' wallet\'s API info sidebar.', 'woocommerce'),
+                    'default'     => '',
                 ),
             );
         }
@@ -222,11 +211,11 @@ function lnbits_satspay_server_init()
             $order = wc_get_order($order_id);
 
             // This will be stored in the invoice (ie. can be used to match orders in LNbits)
-            $memo = get_bloginfo('name') . " Order #" . $order->get_id() . " Total=" . $order->get_total() . get_woocommerce_currency();
+            $memo = get_bloginfo('name') . " order " . $order->get_id() . " (" . $order->get_total() . " " .  get_woocommerce_currency() . ")";
 
             $amount = Utils::convert_to_satoshis($order->get_total(), get_woocommerce_currency());
 
-            $invoice_expiry_time = $this->get_option('lnbits_satspay_expiry_time');
+            $invoice_expiry_time = 15;
             // Call LNbits server to create invoice
             $r = $this->api->createCharge($amount, $memo, $order_id, $invoice_expiry_time);
 
@@ -248,12 +237,12 @@ function lnbits_satspay_server_init()
                     "redirect" => $redirect_url
                 );
             } else {
-                error_log("LNbits API failure. Status=" . $r['status']);
+                error_log("Lightning Checkout API failure. Status=" . $r['status']);
                 error_log($r['response']);
 
                 return array(
                     "result"   => "failure",
-                    "messages" => array("Failed to create LNbits invoice.")
+                    "messages" => array("Failed to create Lightning Checkout invoice.")
                 );
             }
         }
