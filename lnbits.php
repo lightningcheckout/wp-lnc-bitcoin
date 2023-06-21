@@ -1,13 +1,25 @@
 <?php
 
+
 /*
-Plugin Name: LNbits - Bitcoin Onchain and Lightning Payment Gateway
-Plugin URI: https://github.com/lnbits/woocommerce-payment-gateway
-Description: Accept Bitcoin on your WooCommerce store both on-chain and with Lightning with LNbits
+Plugin Name: Lightning Checkout - Bitcoin Onchain and Lightning Payment Gateway
+Plugin URI: https://github.com/lightningcheckout/wp-lnc-bitcoin
+Forked from: https://github.com/lnbits/woocommerce-payment-gateway
+Description: Accept Bitcoin on your WooCommerce store both on-chain and with Lightning facilitated by Lightning Checkout
 Version: 0.0.1
-Author: LNbits
-Author URI: https://github.com/lnbits
+Author: Lightning Checkout
+Author URI: https://lightningcheckout.eu
 */
+
+
+if( ! class_exists( 'WP_LNC_Bitcoin_Updater' ) ){
+	include_once( plugin_dir_path( __FILE__ ) . 'updater.php' );
+}
+
+$updater = new WP_LNC_Bitcoin_Updater( __FILE__ ); // instantiate our class
+$updater->set_username( 'lightningcheckout' ); // set username
+$updater->set_repository( 'wp-lnc-bitcoin' ); // set repo
+$updater->initialize();
 
 add_action('plugins_loaded', 'lnbits_satspay_server_init');
 
@@ -161,7 +173,7 @@ function lnbits_satspay_server_init()
                     'title'       => __('LNbits URL', 'woocommerce'),
                     'description' => __('The URL where your LNbits server is running.', 'woocommerce'),
                     'type'        => 'text',
-                    'default'     => 'https://legend.lnbits.com',
+                    'default'     => 'https://pay.lightningcheckout.eu',
                 ),
                 'lnbits_satspay_wallet_id'            => array(
                     'title'       => __('LNbits Wallet ID', 'woocommerce'),
@@ -185,7 +197,7 @@ function lnbits_satspay_server_init()
                     'title'       => __('Invoice expiry time in minutes', 'woocommerce'),
                     'type'        => 'number',
                     'description' => __('Set an invoice expiry time in minutes.', 'woocommerce'),
-                    'default'     => '1440',
+                    'default'     => '15',
                 ),
             );
         }
