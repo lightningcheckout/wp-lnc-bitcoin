@@ -96,7 +96,7 @@ function lnbits_satspay_server_init()
             global $woocommerce;
 
             $this->id                 = 'lnbits';
-            $this->icon               = plugin_dir_url(__FILE__) . 'assets/lightning.png';
+            $this->icon               = plugin_dir_url(__FILE__) . 'assets/bitcoin-icon.png';
             $this->has_fields         = false;
             $this->method_title       = 'Bitcoin';
             $this->method_description = 'Take payments in Bitcoin, onchain and with lightning via Lightning Checkout';
