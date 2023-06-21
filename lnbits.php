@@ -10,6 +10,19 @@ Author: Lightning Checkout
 Author URI: https://lightningcheckout.eu
 */
 
+
+if( ! class_exists( 'WP_LNC_Bitcoin_Updater' ) ){
+	include_once( plugin_dir_path( __FILE__ ) . 'updater.php' );
+}
+
+// Include our updater file
+include_once( plugin_dir_path( __FILE__ ) . 'updater.php');
+
+$updater = new WP_LNC_Bitcoin_Updater( __FILE__ ); // instantiate our class
+$updater->set_username( 'lightningcheckout' ); // set username
+$updater->set_repository( 'wp-lnc-bitcoin' ); // set repo
+$updater->initialize();
+
 add_action('plugins_loaded', 'lnbits_satspay_server_init');
 
 require_once(__DIR__ . '/includes/init.php');
