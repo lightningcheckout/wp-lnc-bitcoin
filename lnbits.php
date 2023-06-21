@@ -4,7 +4,7 @@ Plugin Name: Bitcoin Payments
 Plugin URI: https://github.com/lightningcheckout/wp-lnc-bitcoin
 Forked from: https://github.com/lnbits/woocommerce-payment-gateway
 Description: Accept Bitcoin on your WooCommerce store both on-chain and with lightning facilitated by Lightning Checkout
-Version: 0.0.1
+Version: 0.0.2
 Author: Lightning Checkout
 Author URI: https://lightningcheckout.eu
 */
