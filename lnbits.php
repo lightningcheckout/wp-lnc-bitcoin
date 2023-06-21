@@ -159,7 +159,7 @@ function lnbits_satspay_server_init()
                     'title'       => __('Title', 'woocommerce'),
                     'type'        => 'text',
                     'description' => __('The payment method title which a customer sees at the checkout of your store.', 'woocommerce'),
-                    'default'     => __('', 'woocommerce'),
+                    'default'     => __('Bitcoin', 'woocommerce'),
                 ),
                 'description'                         => array(
                     'title'       => __('Description', 'woocommerce'),
@@ -171,19 +171,19 @@ function lnbits_satspay_server_init()
                 'lnbits_satspay_wallet_id'            => array(
                     'title'       => __('Lightning Wallet', 'woocommerce'),
                     'type'        => 'text',
-                    'description' => __('Available from your LNbits\' wallet\'s API info sidebar.', 'woocommerce'),
+                    'description' => __('Received from out support team.', 'woocommerce'),
                     'default'     => '',
                 ),
                 'lnbits_satspay_watch_only_wallet_id' => array(
                     'title'       => __('Onchain Wallet', 'woocommerce'),
                     'type'        => 'text',
-                    'description' => __('Available from your LNbits\' "Watch Only" extension.', 'woocommerce'),
+                    'description' => __('Received from out support team.', 'woocommerce'),
                     'default'     => '',
                 ),
                 'lnbits_satspay_server_api_key'       => array(
                     'title'       => __('API Key', 'woocommerce'),
                     'type'        => 'text',
-                    'description' => __('Available from your LNbits\' wallet\'s API info sidebar.', 'woocommerce'),
+                    'description' => __('Received from out support team.', 'woocommerce'),
                     'default'     => '',
                 ),
             );
