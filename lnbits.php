@@ -175,6 +175,7 @@ function lnbits_satspay_server_init()
                     'description' => __('Received from Lightning Checkout.', 'woocommerce'),
                     'type'        => 'text',
                     'default'     => 'https://pay.lightningcheckout.eu',
+		    'custom_attributes' => $readonly,
                 ),
                 'lnbits_satspay_wallet_id'            => array(
                     'title'       => __('Lightning Checkout Lightning ID', 'woocommerce'),
@@ -199,6 +200,7 @@ function lnbits_satspay_server_init()
                     'type'        => 'number',
                     'description' => __('Set an invoice expiry time in minutes.', 'woocommerce'),
                     'default'     => '900',
+		    'custom_attributes' => $readonly,
                 ),
             );
         }
