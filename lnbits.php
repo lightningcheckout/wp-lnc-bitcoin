@@ -1,6 +1,4 @@
 <?php
-
-
 /*
 Plugin Name: Bitcoin Payments
 Plugin URI: https://github.com/lightningcheckout/wp-lnc-bitcoin
