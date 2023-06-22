@@ -1,39 +1,47 @@
-name: Create Release on Tag Push
+name: Create Release
 
 on:
   push:
     tags:
-      - "*.*.*"
+      - '*.*.*'
 
 jobs:
-  create_release:
+  build:
+    name: Create Release
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Create ZIP file
-        run: |
-          # Get the current tag name
-          TAG_NAME=$(git describe --tags --abbrev=0)
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
 
-          # Create a temporary directory
-          TEMP_DIR=$(mktemp -d)
+      - name: Install dependencies
+        run: npm install
 
-          # Copy the files of the current tag to the temporary directory
-          git archive $TAG_NAME | tar -x -C $TEMP_DIR
+      - name: Build release
+        run: npm run build
 
-          # Create the ZIP file from the temporary directory
-          zip -r wp-lnc-bitcoin.zip $TEMP_DIR
-
-      - name: Create Release
+      - name: Create release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          files: |
-            wp-lnc-bitcoin.zip
-          body: |
-            Release ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Create ZIP archive
+        run: zip -r wp-lnc-bitcoin.zip .
+        working-directory: ./dist
+
+      - name: Upload ZIP archive
+        uses: actions/upload-artifact@v2
+        with:
+          name: wp-lnc-bitcoin.zip
+          path: wp-lnc-bitcoin.zip
