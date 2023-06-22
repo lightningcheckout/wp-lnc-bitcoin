@@ -14,8 +14,17 @@ jobs:
 
       - name: Create ZIP file
         run: |
-          # Exclude files specified in .gitattributes
-          git archive -o wp-lnc-bitcoin.zip HEAD $(git ls-files ':!:path/to/exclude')
+          # Get the current tag name
+          TAG_NAME=$(git describe --tags --abbrev=0)
+
+          # Create a temporary directory
+          TEMP_DIR=$(mktemp -d)
+
+          # Copy the files of the current tag to the temporary directory
+          git archive $TAG_NAME | tar -x -C $TEMP_DIR
+
+          # Create the ZIP file from the temporary directory
+          zip -r wp-lnc-bitcoin.zip $TEMP_DIR
 
       - name: Create Release
         uses: actions/create-release@v1
