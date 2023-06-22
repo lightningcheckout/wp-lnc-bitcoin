@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Bitcoin Payments
+Plugin Name: Bitcoin Payment Gateway
 Plugin URI: https://github.com/lightningcheckout/wp-lnc-bitcoin
 Forked from: https://github.com/lnbits/woocommerce-payment-gateway
-Description: Accept Bitcoin on your WooCommerce store both on-chain and with lightning facilitated by Lightning Checkout
-Version: 0.0.3
+Description: Accept onchain bitcoin and bitcoin via the lightning network. Brought to you by Lightning Checkout.
+Version: 0.0.4
 Author: Lightning Checkout
 Author URI: https://lightningcheckout.eu
 */
@@ -99,7 +99,7 @@ function lnbits_satspay_server_init()
             $this->icon               = plugin_dir_url(__FILE__) . 'assets/bitcoin-icon.png';
             $this->has_fields         = false;
             $this->method_title       = 'Bitcoin';
-            $this->method_description = 'Take payments in Bitcoin, onchain and with lightning via Lightning Checkout';
+            $this->method_description = 'Accept bitcoin via Lightning Checkout';
 
             $this->init_form_fields();
             $this->init_settings();
@@ -107,7 +107,8 @@ function lnbits_satspay_server_init()
             $this->title       = $this->get_option('title');
             $this->description = $this->get_option('description');
 
-            $url       = 'https://pay.lightningcheckout.eu';
+            $lnbits_satspay_server_url = 'https://pay.lightningcheckout.eu';
+            $url       = lnbits_satspay_server_url:
             $api_key   = $this->get_option('lnbits_satspay_server_api_key');
             $wallet_id   = $this->get_option('lnbits_satspay_wallet_id');
             $watch_only_wallet_id   = $this->get_option('lnbits_satspay_watch_only_wallet_id');
@@ -149,10 +150,10 @@ function lnbits_satspay_server_init()
             // echo("init_form_fields");
             $this->form_fields = array(
                 'enabled'                             => array(
-                    'title'       => __('Enable bitcoin payments', 'woocommerce'),
+                    'title'       => __('Bitcoin payments', 'woocommerce'),
                     'label'       => __('', 'woocommerce'),
                     'type'        => 'checkbox',
-                    'description' => '',
+                    'description' => 'Enable',
                     'default'     => 'no',
                 ),
                 'title'                               => array(
@@ -167,9 +168,8 @@ function lnbits_satspay_server_init()
                     'description' => __('The payment method description which a customer sees at the checkout of your store.', 'woocommerce'),
                     'default'     => __(''),
                 ),
-
-                'lnbits_satspay_wallet_id'            => array(
-                    'title'       => __('Lightning Wallet', 'woocommerce'),
+                'lnbits_satspay_server_api_key'       => array(
+                    'title'       => __('API Key', 'woocommerce'),
                     'type'        => 'text',
                     'description' => __('Received from out support team.', 'woocommerce'),
                     'default'     => '',
@@ -180,8 +180,8 @@ function lnbits_satspay_server_init()
                     'description' => __('Received from out support team.', 'woocommerce'),
                     'default'     => '',
                 ),
-                'lnbits_satspay_server_api_key'       => array(
-                    'title'       => __('API Key', 'woocommerce'),
+                'lnbits_satspay_wallet_id'            => array(
+                    'title'       => __('Lightning Wallet', 'woocommerce'),
                     'type'        => 'text',
                     'description' => __('Received from out support team.', 'woocommerce'),
                     'default'     => '',
@@ -227,7 +227,7 @@ function lnbits_satspay_server_init()
                 $order->save();
 
                 $url          = sprintf("%s/satspay/%s",
-                    rtrim($this->get_option('lnbits_satspay_server_url'), '/'),
+                    rtrim($lnbits_satspay_server_url), '/'),
                         $resp['id']
                     );
                 $redirect_url = $url;
@@ -261,7 +261,7 @@ function lnbits_satspay_server_init()
 
             if ($r['status'] == 200) {
                 if ($r['response']['paid'] == true) {
-                    $order->add_order_note('Payment is settled and has been credited to your LNbits account. The order can be securely delivered to the customer.');
+                    $order->add_order_note('Payment is settled and has been credited to your Lightning Checkout account.');
                     $order->payment_complete();
                     $order->save();
                     error_log("PAID");
