@@ -21,7 +21,7 @@ class WP_LNC_Bitcoin_Updater {
 
 	public function set_plugin_properties() {
 		$this->plugin	= get_plugin_data( $this->file );
-		$this->basename = plugin_basename( $this->file );
+		$this->basename = 'wp-lnc-bitcoin';
 		$this->active	= is_plugin_active( $this->basename );
 	}
 
