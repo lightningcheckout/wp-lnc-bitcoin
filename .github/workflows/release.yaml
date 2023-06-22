@@ -15,7 +15,7 @@ jobs:
       - name: Create ZIP file
         run: |
           # Exclude files specified in .gitattributes
-          git archive -o myapp-${{ github.ref }}.zip HEAD $(git ls-files ':!:path/to/exclude')
+          git archive -o wp-lnc-bitcoin.zip HEAD $(git ls-files ':!:path/to/exclude')
 
       - name: Create Release
         uses: actions/create-release@v1
@@ -28,4 +28,3 @@ jobs:
             wp-lnc-bitcoin.zip
           body: |
             Release ${{ github.ref }}
-            Add your release notes and description here.
