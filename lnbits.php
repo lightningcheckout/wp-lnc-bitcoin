@@ -107,8 +107,7 @@ function lnbits_satspay_server_init()
             $this->title       = $this->get_option('title');
             $this->description = $this->get_option('description');
 
-            $lnbits_satspay_server_url = 'https://pay.lightningcheckout.eu';
-            $url       = $lnbits_satspay_server_url;
+            $url       = $this->get_option('lnbits_satspay_server_url');
             $api_key   = $this->get_option('lnbits_satspay_server_api_key');
             $wallet_id   = $this->get_option('lnbits_satspay_wallet_id');
             $watch_only_wallet_id   = $this->get_option('lnbits_satspay_watch_only_wallet_id');
@@ -167,6 +166,12 @@ function lnbits_satspay_server_init()
                     'type'        => 'textarea',
                     'description' => __('The payment method description which a customer sees at the checkout of your store.', 'woocommerce'),
                     'default'     => __(''),
+                ),
+                'lnbits_satspay_server_url'           => array(
+                    'title'       => __('Lightning Checkout url', 'woocommerce'),
+                    'description' => __('The URL where your LNbits server is running.', 'woocommerce'),
+                    'type'        => 'text',
+                    'default'     => 'https://pay.lightningcheckout.eu',
                 ),
                 'lnbits_satspay_server_api_key'       => array(
                     'title'       => __('API Key', 'woocommerce'),
@@ -227,7 +232,7 @@ function lnbits_satspay_server_init()
                 $order->save();
 
                 $url          = sprintf("%s/satspay/%s",
-                    rtrim($lnbits_satspay_server_url, '/'),
+                    rtrim($this->get_option('lnbits_satspay_server_url'), '/'),
                         $resp['id']
                     );
                 $redirect_url = $url;
