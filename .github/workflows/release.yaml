@@ -17,8 +17,6 @@ jobs:
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
@@ -27,7 +25,6 @@ jobs:
 
       - name: Create ZIP archive
         run: zip -r wp-lnc-bitcoin.zip .
-        working-directory: ./dist
 
       - name: Upload ZIP archive
         uses: actions/upload-artifact@v2
