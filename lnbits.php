@@ -227,7 +227,7 @@ function lnbits_satspay_server_init()
                 $order->save();
 
                 $url          = sprintf("%s/satspay/%s",
-                    rtrim($lnbits_satspay_server_url), '/'),
+                    rtrim($lnbits_satspay_server_url, '/'),
                         $resp['id']
                     );
                 $redirect_url = $url;
