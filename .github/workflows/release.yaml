@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Exit if not on master branch
-          if: endsWith(github.ref, 'lnc') == false
-          run: exit -1
+        if: endsWith(github.ref, 'lnc') == false
+        run: exit -1
       - name: Checkout
         uses: actions/checkout@v3
       - name: Release
