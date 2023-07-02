@@ -108,7 +108,7 @@ class WP_LNC_Bitcoin_Updater {
 			if( $args->slug == current( explode( '/' , $this->basename ) ) ) { // And it's our slug
 
 				$this->get_repository_info(); // Get our repo info
-                download_link_custom = "https://github.com/lightningcheckout/wp-lnc-bitcoin/releases/download/".$this->github_response['tag_name']."/wp-lnc-bitcoin.zip"
+                $download_link_custom = "https://github.com/lightningcheckout/wp-lnc-bitcoin/releases/download/".$this->github_response['tag_name']."/wp-lnc-bitcoin.zip"
 				// Set it to an array
 				$plugin = array(
 					'name'				=> $this->plugin["Name"],
