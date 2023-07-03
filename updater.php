@@ -65,7 +65,7 @@ class WP_LNC_Bitcoin_Updater {
 		// Add Authorization Token to download_package
 		add_filter( 'upgrader_pre_download',
 			function() {
-				add_filter( 'http_request_args', [ $this, 'download_package' ], 15, 2 );
+				add_filter( 'http_request_args', [ $this, 'download_package' ], 15, 2);
 				return false; // upgrader_pre_download filter default return value.
 			}
 		);
@@ -79,7 +79,6 @@ class WP_LNC_Bitcoin_Updater {
 
 				$this->get_repository_info(); // Get the repo info
 				$out_of_date = version_compare( $this->github_response['tag_name'], $checked[ $this->basename ] ); // Check if we're out of date
-
 				if( $out_of_date ) {
 
 					$new_files = $this->github_response['zipball_url']; // Get the ZIP
@@ -108,8 +107,7 @@ class WP_LNC_Bitcoin_Updater {
 			if( $args->slug == current( explode( '/' , $this->basename ) ) ) { // And it's our slug
 
 				$this->get_repository_info(); // Get our repo info
-                $download_link_custom = "https://github.com/lightningcheckout/wp-lnc-bitcoin/releases/download/".$this->github_response['tag_name']."/wp-lnc-bitcoin.zip";
-				// Set it to an array
+                // Set it to an array
 				$plugin = array(
 					'name'				=> $this->plugin["Name"],
 					'slug'				=> $this->basename,
@@ -123,7 +121,7 @@ class WP_LNC_Bitcoin_Updater {
 						'Description'	=> $this->plugin["Description"],
 						'Updates'		=> $this->github_response['body'],
 					),
-					'download_link'		=> download_link_custom
+					'download_link'		=> $this->github_response['zipball_url']
 				);
 
 				return (object) $plugin; // Return the data
