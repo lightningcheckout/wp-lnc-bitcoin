@@ -4,20 +4,29 @@ Plugin Name: Bitcoin Payment Gateway
 Plugin URI: https://github.com/lightningcheckout/wp-lnc-bitcoin/tree/lnc
 Forked from: https://github.com/lnbits/woocommerce-payment-gateway
 Description: Accept onchain bitcoin and bitcoin via the lightning network. Brought to you by Lightning Checkout.
-Version: 0.4
+Version: 0.2
 Author: Lightning Checkout
 Author URI: https://lightningcheckout.eu
 */
 
+require 'plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
-if( ! class_exists( 'WP_LNC_Bitcoin_Updater' ) ){
-	include_once( plugin_dir_path( __FILE__ ) . 'updater.php' );
-}
+$myUpdateChecker = PucFactory::buildUpdateChecker(
+	'https://github.com/lightningcheckout/wp-lnc-bitcoin/',
+	__FILE__,
+	'wp-lnc-bitcoin'
+);
 
-$updater = new WP_LNC_Bitcoin_Updater( __FILE__ ); // instantiate our class
-$updater->set_username( 'lightningcheckout' ); // set username
-$updater->set_repository( 'wp-lnc-bitcoin' ); // set repo
-$updater->initialize();
+
+//Set the branch that contains the stable release.
+$myUpdateChecker->setBranch('lnc');
+
+//Optional: If you're using a private repository, specify the access token like this:
+//$myUpdateChecker->setAuthentication('your-token-here');
+
+//If you want to use release assets, call the enableReleaseAssets() method after creating the update checker instance:
+$myUpdateChecker->getVcsApi()->enableReleaseAssets();
 
 add_action('plugins_loaded', 'lnbits_satspay_server_init');
 
