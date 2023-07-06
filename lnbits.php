@@ -4,7 +4,7 @@ Plugin Name: Bitcoin Payment Gateway
 Plugin URI: https://github.com/lightningcheckout/wp-lnc-bitcoin/tree/lnc
 Forked from: https://github.com/lnbits/woocommerce-payment-gateway
 Description: Accept onchain bitcoin and bitcoin via the lightning network. Brought to you by Lightning Checkout.
-Version: 0.2
+Version: 0.3
 Author: Lightning Checkout
 Author URI: https://lightningcheckout.eu
 */
@@ -166,20 +166,20 @@ function lnbits_satspay_server_init()
                 ),
                 'title'                               => array(
                     'title'       => __('Title', 'woocommerce'),
-                    'type'        => 'text',
+                    'type'        => 'hidden',
                     'description' => __('The payment method title which a customer sees at the checkout of your store.', 'woocommerce'),
                     'default'     => __('Bitcoin', 'woocommerce'),
                 ),
                 'description'                         => array(
                     'title'       => __('Description', 'woocommerce'),
-                    'type'        => 'textarea',
+                    'type'        => 'hidden',
                     'description' => __('The payment method description which a customer sees at the checkout of your store.', 'woocommerce'),
                     'default'     => __(''),
                 ),
                 'lnbits_satspay_server_url'           => array(
                     'title'       => __('Lightning Checkout url', 'woocommerce'),
                     'description' => __('The URL where your LNbits server is running.', 'woocommerce'),
-                    'type'        => 'text',
+                    'type'        => 'hidden',
                     'default'     => 'https://pay.lightningcheckout.eu',
                 ),
                 'lnbits_satspay_server_api_key'       => array(
