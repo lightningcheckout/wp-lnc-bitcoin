@@ -166,19 +166,15 @@ function lnbits_satspay_server_init()
                 ),
                 'title'                               => array(
                     'title'       => __('Title', 'woocommerce'),
-                    'type'        => 'hidden',
+                    'type'        => 'text',
                     'description' => __('The payment method title which a customer sees at the checkout of your store.', 'woocommerce'),
                     'default'     => __('Bitcoin', 'woocommerce'),
                 ),
                 'description'                         => array(
-                    'title'       => __('Description', 'woocommerce'),
                     'type'        => 'hidden',
-                    'description' => __('The payment method description which a customer sees at the checkout of your store.', 'woocommerce'),
                     'default'     => __(''),
                 ),
                 'lnbits_satspay_server_url'           => array(
-                    'title'       => __('Lightning Checkout url', 'woocommerce'),
-                    'description' => __('The URL where your LNbits server is running.', 'woocommerce'),
                     'type'        => 'hidden',
                     'default'     => 'https://pay.lightningcheckout.eu',
                 ),
