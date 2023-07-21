@@ -225,7 +225,7 @@ function lnbits_satspay_server_init()
 
             $amount = Utils::convert_to_satoshis($order->get_total(), get_woocommerce_currency());
 
-            $invoice_expiry_time = 15;
+            $invoice_expiry_time = 120;
             // Call LNbits server to create invoice
             $r = $this->api->createCharge($amount, $memo, $order_id, $invoice_expiry_time);
 
