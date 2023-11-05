@@ -4,7 +4,7 @@ Plugin Name: Bitcoin Payment Gateway
 Plugin URI: https://github.com/lightningcheckout/wp-lnc-bitcoin/tree/lnc
 Forked from: https://github.com/lnbits/woocommerce-payment-gateway
 Description: Accept onchain bitcoin and bitcoin via the lightning network. Brought to you by Lightning Checkout.
-Version: 0.5
+Version: 0.6
 Author: Lightning Checkout
 Author URI: https://lightningcheckout.eu
 */
@@ -67,36 +67,84 @@ function lnbits_satspay_server_init()
 
     add_filter('woocommerce_payment_gateways', 'add_lnbits_satspay_server_gateway');
 
-    /**
-     * Grab latest post title by an author!
-     */
-    function lnbits_satspay_server_add_payment_complete_callback($data)
+    add_action("init", "btcpayment_callback_endpoint");
+    function btcpayment_callback_endpoint()
     {
-        $order_id = $data["id"];
-        $order    = wc_get_order($order_id);
-        $order->add_order_note('Payment is settled and has been credited to your Lightning Checkout account.');
-        $payment_hash = $order->get_meta('lnbits_satspay_server_payment_hash');
-        $order->payment_complete();
-        $order->save();
-        error_log("PAID");
-        echo(json_encode(array(
-            'result'   => 'success',
-            'redirect' => $order->get_checkout_order_received_url(),
-            'paid'     => true
-        )));
-
-        if (empty($order_id)) {
-            return null;
-        }
+        add_rewrite_rule("^btcpayment-callback/([^/]+)/?", 'index.php?btcpayment_callback=1&order_id=$matches[1]', "top");
     }
 
-    add_action("rest_api_init", function () {
-        register_rest_route("lnbits_satspay_server/v1", "/payment_complete/(?P<id>\d+)", array(
-            "methods"  => "GET",
-            "callback" => "lnbits_satspay_server_add_payment_complete_callback",
-        ));
-    });
+    add_action("query_vars", "btcpayment_callback_query_vars");
+    function btcpayment_callback_query_vars($vars)
+    {
+        $vars[] = "btcpayment_callback";
+        $vars[] = "order_id";
+        return $vars;
+    }
 
+    add_action("template_redirect", "btcpayment_callback_template_redirect");
+    function btcpayment_callback_template_redirect()
+    {
+        if (get_query_var("btcpayment_callback"))
+        {
+            // Check for the request method
+            if ($_SERVER["REQUEST_METHOD"] === "POST")
+            {
+                $order_id = get_query_var("order_id"); // Retrieve the parameter value from the URL
+                $postBody = file_get_contents("php://input");
+                $postData = json_decode($postBody, true); // Assuming it's JSON data
+                // Use $postData for further processing
+                if ($postData !== null)
+                {
+                    // Get charge id from payload
+                    $request_charge = $postData["id"];
+
+                    // Get charge id from order
+                    $order = wc_get_order($order_id);
+                    $order_charge_id = $order->get_meta("lnbits_satspay_server_payment_id");
+
+                    // Check if order charge id equals charge id in request
+                    if ($request_charge == $order_charge_id)
+                    {
+                        // If not already marked as paid.
+                        if ($order && !$order->is_paid())
+                        {
+                            // Get an instance of WC_Gateway_LNbits_Satspay_Server, call check_payment method
+                            $lnbits_gateway = new WC_Gateway_LNbits_Satspay_Server();
+                            $r = $lnbits_gateway->api->checkChargePaid($order_charge_id);
+                            if ($r["status"] == 200)
+                            {
+                                if ($r["response"]["paid"] == true && !$order->is_paid())
+                                {
+                                    $order->add_order_note("Payment completed (webhook).");
+                                    $order->payment_complete();
+                                    $order->save();
+                                }
+                            }
+                            die();
+                        }
+                    }
+                    else
+                    {
+                        header("HTTP/1.1 400 Bad Request");
+                        echo "400 Bad Request";
+                        die();
+                    }
+                }
+                else
+                {
+                    header("HTTP/1.1 400 Bad Request");
+                    echo "400 Bad Request";
+                    die();
+                }
+            }
+            else
+            {
+                header("HTTP/1.1 405 Method Not Allowed");
+                echo "Method Not Allowed";
+                die();
+            }
+        }
+    }
 
     // Defined here, because it needs to be defined after WC_Payment_Gateway is already loaded.
     class WC_Gateway_LNbits_Satspay_Server extends WC_Payment_Gateway {
@@ -226,6 +274,7 @@ function lnbits_satspay_server_init()
             $amount = Utils::convert_to_satoshis($order->get_total(), get_woocommerce_currency());
 
             $invoice_expiry_time = 720;
+
             // Call LNbits server to create invoice
             $r = $this->api->createCharge($amount, $memo, $order_id, $invoice_expiry_time);
 
@@ -271,10 +320,9 @@ function lnbits_satspay_server_init()
 
             if ($r['status'] == 200) {
                 if ($r['response']['paid'] == true) {
-                    $order->add_order_note('Payment is settled and has been credited to your Lightning Checkout account.');
+                    $order->add_order_note('Payment completed (checkout).');
                     $order->payment_complete();
                     $order->save();
-                    error_log("PAID");
                 }
             } else {
                 // TODO: handle non 200 response status
