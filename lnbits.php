@@ -227,7 +227,7 @@ function lnbits_satspay_server_init()
                     'default'     => 'https://pay.lightningcheckout.eu',
                 ),
                 'lnbits_satspay_server_api_key'       => array(
-                    'title'       => __('API Key', 'woocommerce'),
+                    'title'       => __('Lightning Wallet', 'woocommerce'),
                     'type'        => 'text',
                     'description' => __('Received from out support team.', 'woocommerce'),
                     'default'     => '',
@@ -239,7 +239,7 @@ function lnbits_satspay_server_init()
                     'default'     => '',
                 ),
                 'lnbits_satspay_wallet_id'            => array(
-                    'title'       => __('Lightning Wallet', 'woocommerce'),
+                    'title'       => __('Account ID', 'woocommerce'),
                     'type'        => 'text',
                     'description' => __('Received from out support team.', 'woocommerce'),
                     'default'     => '',
