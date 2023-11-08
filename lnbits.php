@@ -227,21 +227,18 @@ function lnbits_satspay_server_init()
                     'default'     => 'https://pay.lightningcheckout.eu',
                 ),
                 'lnbits_satspay_server_api_key'       => array(
-                    'title'       => __('Lightning Wallet', 'woocommerce'),
+                    'title'       => __('API Key', 'woocommerce'),
                     'type'        => 'text',
-                    'description' => __('Received from out support team.', 'woocommerce'),
                     'default'     => '',
                 ),
                 'lnbits_satspay_watch_only_wallet_id' => array(
-                    'title'       => __('Onchain Wallet', 'woocommerce'),
+                    'title'       => __('Onchain wallet ID', 'woocommerce'),
                     'type'        => 'text',
-                    'description' => __('Received from out support team.', 'woocommerce'),
                     'default'     => '',
                 ),
                 'lnbits_satspay_wallet_id'            => array(
-                    'title'       => __('Account ID', 'woocommerce'),
+                    'title'       => __('Lightning wallet ID', 'woocommerce'),
                     'type'        => 'text',
-                    'description' => __('Received from out support team.', 'woocommerce'),
                     'default'     => '',
                 ),
             );
