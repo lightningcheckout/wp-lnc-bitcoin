@@ -269,11 +269,29 @@ function lnbits_satspay_server_init()
             $memo = get_bloginfo('name') . " order " . $order->get_id() . " (" . $order->get_total() . " " .  get_woocommerce_currency() . ")";
 
             $amount = Utils::convert_to_satoshis($order->get_total(), get_woocommerce_currency());
+            $coupon_codes = $order->get_coupon_codes();
+            if (!empty($coupon_codes)) {
+                error_log("Coupons applied");
+                $referrals = implode(', ', $coupon_codes);
+            } else {
+                error_log("No coupons applied");
+                $referrals = "NO_COUPONS";
+            }
+
+            $extra_data = array(
+            "mempool_endpoint" => "https://mempool.space",
+            "network" => "Mainnet",
+            "misc" => array(
+                "lnc_product" => "BTCWEBSHOP",
+                "lnc_amount" => $order->get_total(),
+        	    "lnc_currency" => get_woocommerce_currency(),
+        	    "lnc_referrals" => $referrals
+        	));
 
             $invoice_expiry_time = 720;
 
             // Call LNbits server to create invoice
-            $r = $this->api->createCharge($amount, $memo, $order_id, $invoice_expiry_time);
+            $r = $this->api->createCharge($amount, $memo, $order_id, $extra_data, $invoice_expiry_time);
 
             if ($r['status'] === 200) {
                 $resp = $r['response'];

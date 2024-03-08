@@ -18,8 +18,9 @@ class API {
         $this->watch_only_wallet_id = $watch_only_wallet_id;
     }
 
-    public function createCharge($amount, $memo, $order_id, $invoice_expiry_time = 1440) {
+    public function createCharge($amount, $memo, $order_id, $extra_data, $invoice_expiry_time = 1440) {
         $c = new CurlWrapper();
+
         $order = wc_get_order($order_id);
         $data = array(
             "onchainwallet" => $this->watch_only_wallet_id,
@@ -29,7 +30,8 @@ class API {
             "completelink" => $order->get_checkout_order_received_url(),
             "completelinktext" => "Payment Received. Go Back",
             "time"=> intval($invoice_expiry_time),
-            "amount"=> $amount
+            "amount"=> $amount,
+            "extra" => json_encode($extra_data)
         );
         $headers = array(
             'X-Api-Key' => $this->api_key,
