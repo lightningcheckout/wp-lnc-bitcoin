@@ -4,7 +4,7 @@ Plugin Name: Bitcoin Payment Gateway
 Plugin URI: https://github.com/lightningcheckout/wp-lnc-bitcoin/tree/lnc
 Forked from: https://github.com/lnbits/woocommerce-payment-gateway
 Description: Accept onchain bitcoin and bitcoin via the lightning network. Brought to you by Lightning Checkout.
-Version: 0.7
+Version: 0.8
 Author: Lightning Checkout
 Author URI: https://lightningcheckout.eu
 */
@@ -82,69 +82,84 @@ function lnbits_satspay_server_init()
     }
 
     add_action("template_redirect", "btcpayment_callback_template_redirect");
-    function btcpayment_callback_template_redirect()
-    {
-        if (get_query_var("btcpayment_callback"))
+        function btcpayment_callback_template_redirect()
         {
-            // Check for the request method
-            if ($_SERVER["REQUEST_METHOD"] === "POST")
+            if (get_query_var("btcpayment_callback"))
             {
-                $order_id = get_query_var("order_id"); // Retrieve the parameter value from the URL
-                $postBody = file_get_contents("php://input");
-                $postData = json_decode($postBody, true); // Assuming it's JSON data
-                // Use $postData for further processing
-                if ($postData !== null)
+                // Check for the request method
+                if ($_SERVER["REQUEST_METHOD"] === "POST")
                 {
-                    // Get charge id from payload
-                    $request_charge = $postData["id"];
+                    $order_id = get_query_var("order_id"); // Retrieve the parameter value from the URL
+                    $postBody = file_get_contents("php://input");
 
-                    // Get charge id from order
-                    $order = wc_get_order($order_id);
-                    $order_charge_id = $order->get_meta("lnbits_satspay_server_payment_id");
+                    // Use a regular expression to extract the id. Nasty workaround for json_decode errors due to extra
+                    $postBody = str_replace('\\\\', '\\', $postBody);
+                    $postBody = str_replace('\\"', '"', $postBody);
+                    preg_match('/"id":\s*"([^"]+)"/', $postBody, $matches);
 
-                    // Check if order charge id equals charge id in request
-                    if ($request_charge == $order_charge_id)
+                    // Check if we found a match and retrieve the id
+                    if (isset($matches[1])) {
+                        $request_charge = $matches[1];
+                        error_log("Processing webhook for charge: " . $request_charge);
+                    } else {
+                        error_log("Processing webhook failed.");
+                        error_log("Webhook data: " . $postBody);
+                        $request_charge = null;
+                    }
+
+                    // Use $postData for further processing
+                    if ($request_charge !== null)
                     {
-                        // If not already marked as paid.
-                        if ($order && !$order->is_paid())
+
+                        // Get charge id from order
+                        $order = wc_get_order($order_id);
+                        $order_charge_id = $order->get_meta("lnbits_satspay_server_payment_id");
+
+
+                        // Check if order charge id equals charge id in request
+                        if ($request_charge == $order_charge_id)
                         {
-                            // Get an instance of WC_Gateway_LNbits_Satspay_Server, call check_payment method
-                            $lnbits_gateway = new WC_Gateway_LNbits_Satspay_Server();
-                            $r = $lnbits_gateway->api->checkChargePaid($order_charge_id);
-                            if ($r["status"] == 200)
+                            // If not already marked as paid.
+                            if ($order && !$order->is_paid())
                             {
-                                if ($r["response"]["paid"] == true && !$order->is_paid())
+                                // Get an instance of WC_Gateway_LNbits_Satspay_Server, call check_payment method
+                                $lnbits_gateway = new WC_Gateway_LNbits_Satspay_Server();
+                                $r = $lnbits_gateway->api->checkChargePaid($order_charge_id);
+                                if ($r["status"] == 200)
                                 {
-                                    $order->add_order_note("Payment completed (webhook).");
-                                    $order->payment_complete();
-                                    $order->save();
+                                    if ($r["response"]["paid"] == true && !$order->is_paid())
+                                    {
+                                        $order->add_order_note("Payment completed (webhook).");
+                                        $order->payment_complete();
+                                        $order->save();
+                                    }
                                 }
+                                die();
                             }
+                        }
+                        else
+                        {
+                            header("HTTP/1.1 400 Bad Request");
+                            echo "400 Bad Request - Order not matched";
                             die();
                         }
                     }
                     else
                     {
                         header("HTTP/1.1 400 Bad Request");
-                        echo "400 Bad Request";
+                        echo "400 Bad Request - Not able to retrieve id from webhook";
                         die();
                     }
-                }
+
+            }
                 else
                 {
-                    header("HTTP/1.1 400 Bad Request");
-                    echo "400 Bad Request";
+                    header("HTTP/1.1 405 Method Not Allowed");
+                    echo "Method Not Allowed";
                     die();
                 }
             }
-            else
-            {
-                header("HTTP/1.1 405 Method Not Allowed");
-                echo "Method Not Allowed";
-                die();
-            }
         }
-    }
 
     // Defined here, because it needs to be defined after WC_Payment_Gateway is already loaded.
     class WC_Gateway_LNbits_Satspay_Server extends WC_Payment_Gateway {
@@ -168,6 +183,7 @@ function lnbits_satspay_server_init()
             $api_key   = $this->get_option('lnbits_satspay_server_api_key');
             $wallet_id   = $this->get_option('lnbits_satspay_wallet_id');
             $watch_only_wallet_id   = $this->get_option('lnbits_satspay_watch_only_wallet_id');
+
             $this->api = new API($url, $api_key, $wallet_id, $watch_only_wallet_id);
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(
